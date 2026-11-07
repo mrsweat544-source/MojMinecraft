@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "storageesp",
+  "version": "1.0.0",
+  "name": "Storage ESP + Freecam",
+  "description": "Freecam (F6) and see-through-walls highlights for chests (orange), ender chests (purple) and shulker boxes (pink) (F7).",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.esp.EspClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
