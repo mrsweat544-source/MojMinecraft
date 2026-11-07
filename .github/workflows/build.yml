@@ -7,12 +7,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [econmod, storageesp]
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Show repo files
-        run: ls -R . | head -80
 
       - name: Set up Java 25
         uses: actions/setup-java@v4
@@ -22,26 +23,17 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.5.1
 
-      - name: Build every Gradle project found
-        run: |
-          found=0
-          for g in $(find . -name gradlew -not -path "*/node_modules/*"); do
-            dir=$(dirname "$g")
-            echo "=== Building $dir ==="
-            chmod +x "$g"
-            (cd "$dir" && ./gradlew build)
-            found=1
-          done
-          if [ "$found" = 0 ]; then
-            echo "No gradlew found anywhere in the repo"
-            exit 1
-          fi
+      - name: Build the mod
+        working-directory: ${{ matrix.project }}
+        run: gradle build --no-daemon
 
-      - name: Upload the jars
+      - name: Upload the jar
         uses: actions/upload-artifact@v4
         with:
-          name: mod-jars
+          name: ${{ matrix.project }}-jar
           path: |
-            **/build/libs/*.jar
-            !**/build/libs/*-sources.jar
+            ${{ matrix.project }}/build/libs/*.jar
+            !${{ matrix.project }}/build/libs/*-sources.jar
